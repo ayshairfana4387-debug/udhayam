@@ -2,11 +2,57 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Udyam Sahayak</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+    <!-- Primary Meta -->
+    <title>Udyam Sahayak — Business Scheme Guide</title>
+    <meta name="description" content="Udyam Sahayak helps Indian entrepreneurs and small business owners find, apply for, and track government loan schemes like PMEGP, MUDRA, PMFME and more." />
+    <meta name="keywords" content="PMEGP, MUDRA loan, PMFME, government scheme, small business, entrepreneur, India, startup loan" />
+    <meta name="author" content="Udyam Sahayak" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#f97316" />
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <link rel="apple-touch-icon" href="/icon-512.png" />
+
+    <!-- iOS PWA support -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Udyam Sahayak" />
+
+    <!-- Android / Chrome PWA -->
+    <meta name="mobile-web-app-capable" content="yes" />
+
+    <!-- Open Graph (for sharing) -->
+    <meta property="og:title" content="Udyam Sahayak — Business Scheme Guide" />
+    <meta property="og:description" content="Find and apply for the right government loan scheme for your business." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/icon-512.png" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Udyam Sahayak" />
+    <meta name="twitter:description" content="Your guide to Indian government business schemes." />
+    <meta name="twitter:image" content="/icon-512.png" />
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+
+    <!-- Register Service Worker -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker
+            .register('/sw.js')
+            .then((reg) => console.log('[SW] Registered:', reg.scope))
+            .catch((err) => console.warn('[SW] Registration failed:', err));
+        });
+      }
+    </script>
   </body>
 </html>

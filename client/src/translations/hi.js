@@ -134,5 +134,17 @@ export default {
   voiceStop: 'बोलना समाप्त करें',
   voiceUnavailable: 'इस ब्राउज़र में वॉइस सपोर्ट उपलब्ध नहीं है। कृपया Chrome या Edge का उपयोग करें।',
   readAloud: 'आवाज में सुनें',
-  stopAudio: 'आवाज रोकें'
+  stopAudio: 'आवाज रोकें',
+
+  // YouTube-style Scheme History & Multi-Loan Notifications
+  mySchemes: 'मेरी योजनाएं व इतिहास',
+  mySchemesTitle: 'मेरी नामांकित योजनाएं और ऋण इतिहास',
+  journeyHistory: 'नागरिक सेवा इतिहास • पिछली योजनाएं',
+  historySubtitle: 'अपने सभी पुराने और सक्रिय ऋणों को ट्रैक करें। नया ऋण खोजते समय भी चालू ऋण की किस्त सूचनाएं प्राप्त करते रहें।',
+  loanNotifications: 'ऋण व किस्त अनुस्मारक',
+  viewAllSchemes: 'मेरी सभी योजनाएं व इतिहास देखें',
+  saveToHistory: 'इतिहास में सहेजें',
+  exploreAnotherLoan: '+ अन्य नया ऋण खोजें',
+  resumeJourney: 'ऋण चुकौती प्रबंधित करें'
 };
+

@@ -134,5 +134,17 @@ export default {
   voiceStop: 'Stop Listening',
   voiceUnavailable: 'Microphone speech recognition is not supported in this browser. Please use Chrome or Edge.',
   readAloud: 'Read Aloud',
-  stopAudio: 'Stop Audio'
+  stopAudio: 'Stop Audio',
+
+  // YouTube-style Scheme History & Multi-Loan Notifications
+  mySchemes: 'My Schemes & History',
+  mySchemesTitle: 'My Enrolled Schemes & Loan History',
+  journeyHistory: 'Citizen Service Journey • Persistent History',
+  historySubtitle: 'Track all schemes you have enrolled in. Keep your ongoing 24-month loan active with reminders while exploring new schemes.',
+  loanNotifications: 'Loan & Repayment Reminders',
+  viewAllSchemes: 'View All My Schemes & History',
+  saveToHistory: 'Save to My History',
+  exploreAnotherLoan: '+ Explore & Apply for Another Loan',
+  resumeJourney: 'Resume / Manage Repayment'
 };
+

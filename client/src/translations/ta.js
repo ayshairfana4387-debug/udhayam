@@ -134,5 +134,17 @@ export default {
   voiceStop: 'பேச்சை நிறுத்துங்கள்',
   voiceUnavailable: 'உங்கள் உலாவியில் குரல் உள்ளீடு ஆதரிக்கப்படவில்லை. Chrome அல்லது Edge பயன்படுத்தவும்.',
   readAloud: 'ஒலியில் வாசியுங்கள்',
-  stopAudio: 'ஒலியை நிறுத்துங்கள்'
+  stopAudio: 'ஒலியை நிறுத்துங்கள்',
+
+  // YouTube-style Scheme History & Multi-Loan Notifications
+  mySchemes: 'எனது திட்டங்கள் & வரலாறு',
+  mySchemesTitle: 'பதிவுசெய்த திட்டங்கள் & கடன் வரலாறு',
+  journeyHistory: 'சேவை வரலாறு • முந்தைய திட்டங்கள்',
+  historySubtitle: 'நீங்கள் விண்ணப்பித்த மற்றும் பயன்படுத்தும் அனைத்து திட்டங்களையும் கண்காணிக்கவும். புதிய கடன் தேடும் போதும் முதல் கடனின் தவணை அறிவிப்புகளைப் பெறுங்கள்.',
+  loanNotifications: 'கடன் தவணை நினைவூட்டல்கள்',
+  viewAllSchemes: 'அனைத்து திட்டங்கள் & வரலாற்றைக் காண்க',
+  saveToHistory: 'வரலாற்றில் சேமி',
+  exploreAnotherLoan: '+ மற்றொரு புதிய கடனைத் தேடுக',
+  resumeJourney: 'கடன் விவரங்களை நிர்வகி / காண்க'
 };
+

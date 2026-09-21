@@ -131,4 +131,16 @@ describe('App Navigation, 6 Languages & 3-Step Flow', () => {
     expect(ifscGuide).toBeDefined();
     expect(ifscGuide.answer).toContain('IFSC');
   });
+
+  it('renders My Schemes & Loan History page at /history route', () => {
+    render(
+      <MemoryRouter initialEntries={['/history']}>
+        <App />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText(translations.en.mySchemesTitle)).toBeTruthy();
+    expect(screen.getByText(translations.en.exploreAnotherLoan)).toBeTruthy();
+  });
 });
+

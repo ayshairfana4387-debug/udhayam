@@ -4,6 +4,7 @@ import UserFlowPage from './pages/UserFlowPage.jsx';
 import ResultPage from './pages/ResultPage.jsx';
 import HelpPage from './pages/HelpPage.jsx';
 import AdminDashboardPage from './pages/AdminDashboardPage.jsx';
+import HistoryPage from './pages/HistoryPage.jsx';
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
         <Route path="/result" element={<ResultPage />} />
         <Route path="/help" element={<HelpPage />} />
         <Route path="/admin" element={<AdminDashboardPage />} />
+        <Route path="/history" element={<HistoryPage />} />
       </Routes>
     </div>
   );

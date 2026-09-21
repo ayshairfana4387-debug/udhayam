@@ -134,5 +134,17 @@ export default {
   voiceStop: 'ಮಾತು ನಿಲ್ಲಿಸಿ',
   voiceUnavailable: 'ಈ ಬ್ರೌಸರ್‌ನಲ್ಲಿ ಧ್ವನಿ ಬೆಂಬಲ ಲಭ್ಯವಿಲ್ಲ. Chrome ಅಥವಾ Edge ಬಳಸಿ.',
   readAloud: 'ಧ್ವನಿಯಲ್ಲಿ ಓದಿ',
-  stopAudio: 'ಧ್ವನಿ ನಿಲ್ಲಿಸಿ'
+  stopAudio: 'ಧ್ವನಿ ನಿಲ್ಲಿಸಿ',
+
+  // YouTube-style Scheme History & Multi-Loan Notifications
+  mySchemes: 'ನನ್ನ ಯೋಜನೆಗಳು & ಇತಿಹಾಸ',
+  mySchemesTitle: 'ನೋಂದಾಯಿತ ಯೋಜನೆಗಳು ಮತ್ತು ಸಾಲದ ಇತಿಹಾಸ',
+  journeyHistory: 'ಸೇವಾ ಇತಿಹಾಸ • ಹಿಂದಿನ ಯೋಜನೆಗಳು',
+  historySubtitle: 'ನೀವು ನೋಂದಾಯಿಸಿದ ಎಲ್ಲಾ ಯೋಜನೆಗಳನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಿ. ಹೊಸ ಯೋಜನೆ ಹುಡುಕುತ್ತಿರುವಾಗಲೂ ನಿಮ್ಮ ಚಾಲ್ತಿ ಸಾಲದ ಕಂತು ಅಧಿಸೂಚನೆಗಳನ್ನು ಪಡೆಯಿರಿ.',
+  loanNotifications: 'ಸಾಲ ಮರುಪಾವತಿ ಅಧಿಸೂಚನೆಗಳು',
+  viewAllSchemes: 'ಎಲ್ಲಾ ಯೋಜನೆಗಳು & ಇತಿಹಾಸವನ್ನು ವೀಕ್ಷಿಸಿ',
+  saveToHistory: 'ಇತಿಹಾಸದಲ್ಲಿ ಉಳಿಸಿ',
+  exploreAnotherLoan: '+ ಇನ್ನೊಂದು ಹೊಸ ಸಾಲವನ್ನು ಅನ್ವೇಷಿಸಿ',
+  resumeJourney: 'ಸಾಲ ಮರುಪಾವತಿಯನ್ನು ನಿರ್ವಹಿಸಿ'
 };
+

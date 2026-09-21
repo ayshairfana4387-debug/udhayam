@@ -134,5 +134,17 @@ export default {
   voiceStop: 'మాట్లాడటం ఆపండి',
   voiceUnavailable: 'ఈ బ్రౌజర్‌లో వాయిస్ సపోర్ట్ లేదు. Chrome లేదా Edge ఉపయోగించండి.',
   readAloud: 'వాయిస్‌లో చదవండి',
-  stopAudio: 'ఆడియో ఆపండి'
+  stopAudio: 'ఆడియో ఆపండి',
+
+  // YouTube-style Scheme History & Multi-Loan Notifications
+  mySchemes: 'నా పథకాలు & చరిత్ర',
+  mySchemesTitle: 'నమోదైన పథకాలు & రుణ చరిత్ర',
+  journeyHistory: 'సేవా చరిత్ర • మునుపటి పథకాలు',
+  historySubtitle: 'మీరు నమోదు చేసుకున్న అన్ని పథకాలను ట్రాక్ చేయండి. కొత్త పథకం కోసం చూస్తున్నప్పటికీ మీ ప్రస్తుత రుణ హెచ్చరికలను పొందండి.',
+  loanNotifications: 'రుణ చెల్లింపు హెచ్చరికలు',
+  viewAllSchemes: 'అన్ని పథకాలు & చరిత్రను చూడండి',
+  saveToHistory: 'చరిత్రలో భద్రపరచు',
+  exploreAnotherLoan: '+ మరొక కొత్త రుణాన్ని అన్వేషించండి',
+  resumeJourney: 'రుణ వివరాలను నిర్వహించండి'
 };
+

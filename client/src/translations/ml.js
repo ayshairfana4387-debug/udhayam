@@ -134,5 +134,17 @@ export default {
   voiceStop: 'സംസാരം നിർത്തുക',
   voiceUnavailable: 'ഈ ബ്രൗസറിൽ വോയ്‌സ് പിന്തുണ ലഭ്യമല്ല. Chrome അല്ലെങ്കിൽ Edge ഉപയോഗിക്കുക.',
   readAloud: 'വായിച്ചു കേൾക്കുക',
-  stopAudio: 'ശബ്ദം നിർത്തുക'
+  stopAudio: 'ശബ്ദം നിർത്തുക',
+
+  // YouTube-style Scheme History & Multi-Loan Notifications
+  mySchemes: 'എന്റെ പദ്ധതികൾ & ഹിസ്റ്ററി',
+  mySchemesTitle: 'രജിസ്റ്റർ ചെയ്ത പദ്ധതികളും വായ്പ ഹിസ്റ്ററിയും',
+  journeyHistory: 'സേവന ചരിത്രം • മുൻകാല പദ്ധതികൾ',
+  historySubtitle: 'നിങ്ങൾ രജിസ്റ്റർ ചെയ്ത എല്ലാ പദ്ധതികളും ട്രാക്ക് ചെയ്യുക. പുതിയ വായ്പ തിരയുമ്പോഴും നിലവിലുള്ള വായ്പയുടെ തിരിച്ചടവ് അറിയിപ്പുകൾ ലഭിക്കും.',
+  loanNotifications: 'വായ്പാ തിരിച്ചടവ് അറിയിപ്പുകൾ',
+  viewAllSchemes: 'എല്ലാ പദ്ധതികളും ഹിസ്റ്ററിയും കാണുക',
+  saveToHistory: 'ഹിസ്റ്ററിയിൽ സേവ് ചെയ്യുക',
+  exploreAnotherLoan: '+ മറ്റൊരു പുതിയ വായ്പ കണ്ടെത്തുക',
+  resumeJourney: 'വായ്പാ തിരിച്ചടവ് വിവരങ്ങൾ കാണുക'
 };
+

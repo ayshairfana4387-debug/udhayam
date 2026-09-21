@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Landmark, Volume2, VolumeX, CheckCircle, ArrowRight, FileText, Wallet, ShieldCheck, Sparkles, Building2, PhoneCall } from 'lucide-react';
+import { Landmark, Volume2, VolumeX, CheckCircle, ArrowRight, FileText, Wallet, ShieldCheck, Sparkles, Building2, PhoneCall, Clock } from 'lucide-react';
 import { translations, availableLanguages, defaultLanguage } from '../translations/index.js';
 import { useVoice } from '../services/useVoice.js';
+import NotificationCenter from '../components/NotificationCenter.jsx';
 
 export default function HomePage() {
   const savedLanguage = localStorage.getItem('udyam-language') || defaultLanguage;
@@ -48,6 +49,13 @@ export default function HomePage() {
         </div>
 
         <div className="header-controls">
+          <NotificationCenter text={text} voice={voice} />
+
+          <Link to="/history" className="header-history-link" title="My Enrolled Schemes & Loan History">
+            <Clock size={18} />
+            <span className="history-link-text">{text.mySchemes || 'My Schemes'}</span>
+          </Link>
+
           <div className="language-selector-wrap">
             <select
               value={language}
@@ -121,10 +129,16 @@ export default function HomePage() {
               <ArrowRight size={20} />
             </button>
           </Link>
-          <Link to="/flow?step=2" className="secondary-action-link">
-            <button className="secondary-button form-guide-btn">
+          <Link to="/history" className="secondary-action-link">
+            <button className="secondary-button history-cta-btn">
+              <Clock size={18} />
+              <span>{text.mySchemes || 'My Schemes & Loan History'}</span>
+            </button>
+          </Link>
+          <Link to="/flow?step=2" className="tertiary-action-link">
+            <button className="tertiary-button form-guide-btn">
               <FileText size={18} />
-              <span>{text.viewGuide || 'Bank Form Filling Guide'}</span>
+              <span>{text.viewGuide || 'Bank Form Guide'}</span>
             </button>
           </Link>
         </div>

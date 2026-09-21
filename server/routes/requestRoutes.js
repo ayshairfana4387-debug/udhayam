@@ -9,6 +9,15 @@ import {
   deleteRequestController,
   statisticsController
 } from '../controllers/requestController.js';
+import {
+  getUserSchemesController,
+  getUserSchemeController,
+  createUserSchemeController,
+  updateUserSchemeController,
+  recordSchemePaymentController,
+  deleteUserSchemeController,
+  getNotificationsController
+} from '../controllers/userSchemeController.js';
 import { validateRequest, validateUser } from '../middleware/validate.js';
 
 const router = Router();
@@ -24,5 +33,14 @@ router.get('/requests/:id', getRequestController);
 router.put('/requests/:id', updateRequestController);
 router.delete('/requests/:id', deleteRequestController);
 router.get('/statistics', statisticsController);
+
+// User scheme journeys (YouTube-style history) & multi-loan notification routes
+router.get('/user-schemes', getUserSchemesController);
+router.post('/user-schemes', createUserSchemeController);
+router.get('/user-schemes/:id', getUserSchemeController);
+router.put('/user-schemes/:id', updateUserSchemeController);
+router.post('/user-schemes/:id/pay', recordSchemePaymentController);
+router.delete('/user-schemes/:id', deleteUserSchemeController);
+router.get('/notifications', getNotificationsController);
 
 export default router;

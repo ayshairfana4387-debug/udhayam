@@ -25,14 +25,26 @@ import {
   Bell,
   RefreshCw,
   RotateCcw,
-  Calendar
+  Calendar,
+  Clock,
+  Plus,
+  Bookmark,
+  Layers
 } from 'lucide-react';
 import { governmentSchemes, governmentBanks, getRecommendedSchemes } from '../data/schemesAndBanks.js';
 import { translations, availableLanguages, defaultLanguage } from '../translations/index.js';
 import { useVoice } from '../services/useVoice.js';
 import StepIndicator from '../components/StepIndicator.jsx';
 import FormGuideModal from '../components/FormGuideModal.jsx';
-import { createRequest } from '../services/api.js';
+import NotificationCenter from '../components/NotificationCenter.jsx';
+import {
+  createRequest,
+  getUserSchemes,
+  getUserScheme,
+  saveUserScheme,
+  updateUserScheme,
+  recordSchemePayment
+} from '../services/api.js';
 
 export default function UserFlowPage({ initialStep = 1 }) {
   const navigate = useNavigate();
@@ -128,10 +140,10 @@ export default function UserFlowPage({ initialStep = 1 }) {
   const totalDocsCount = defaultDocKeys.length;
   const docsProgressPercent = Math.round((readyDocsCount / (totalDocsCount || 1)) * 100);
 
-  // Step 3: Sanction status state
+  // Step 3: Sanction status state & Journey Persistence
   const [sanctionStatus, setSanctionStatus] = useState('yes');
   const [sanctionAmount, setSanctionAmount] = useState(Number(answers.loanAmount) || 200000);
-  const [sanctionInterest, setSanctionInterest] = useState(selectedScheme.interest || 8.0);
+  const [sanctionInterest, setSanctionInterest] = useState(selectedScheme.interest || 8.5);
   const [repaymentMonths, setRepaymentMonths] = useState(24);
 
   // Step 3: Continuous monthly repayment ledger simulation state
@@ -141,13 +153,108 @@ export default function UserFlowPage({ initialStep = 1 }) {
   const [cumulativeInterestPaid, setCumulativeInterestPaid] = useState(0);
   const [notificationAlert, setNotificationAlert] = useState(null);
 
-  // Sync loan amount whenever sanctionAmount changes
+  // Multi-Scheme Journey State (like YouTube Watch History)
+  const [activeJourneyId, setActiveJourneyId] = useState(null);
+  const [userJourneys, setUserJourneys] = useState([]);
+  const [saveToast, setSaveToast] = useState('');
+
+  // Helper to compute exact amortization balances for any selected month
+  const calculateAmortizationForMonth = (principal, annualRate, tenure, targetMonth) => {
+    const P = Number(principal) || 100000;
+    const rYear = Number(annualRate) || 8.0;
+    const n = Math.max(1, Number(tenure) || 12);
+    const rMonth = rYear / 100 / 12;
+    const emi = rMonth > 0
+      ? Math.round((P * rMonth * Math.pow(1 + rMonth, n)) / (Math.pow(1 + rMonth, n) - 1))
+      : Math.round(P / n);
+
+    let bal = P;
+    let cumPrin = 0;
+    let cumInt = 0;
+
+    for (let m = 1; m < targetMonth; m++) {
+      if (bal <= 0) break;
+      const interest = Math.min(bal, Math.round(bal * rMonth));
+      const prin = Math.min(bal, Math.max(0, emi - interest));
+      bal = Math.max(0, bal - prin);
+      cumPrin += prin;
+      cumInt += interest;
+    }
+
+    return { remainingBalance: bal, cumulativePrincipalPaid: cumPrin, cumulativeInterestPaid: cumInt };
+  };
+
+  // Fetch all user scheme journeys from backend
+  const fetchJourneys = async () => {
+    try {
+      const res = await getUserSchemes('rajesh-kumar');
+      if (res.success && Array.isArray(res.schemes)) {
+        setUserJourneys(res.schemes);
+        return res.schemes;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    return [];
+  };
+
+  const loadSpecificJourney = (journeyId, journeyList = userJourneys) => {
+    const found = journeyList.find((j) => j.id === journeyId);
+    if (found) {
+      setActiveJourneyId(found.id);
+      if (found.schemeId) setSelectedSchemeId(found.schemeId);
+      if (found.bankId) setSelectedBankId(found.bankId);
+      if (found.applicantName) {
+        setAnswers((prev) => ({
+          ...prev,
+          applicantName: found.applicantName,
+          district: found.district || prev.district,
+          businessType: found.businessType || prev.businessType
+        }));
+      }
+      setSanctionStatus('yes');
+      setSanctionAmount(Number(found.loanAmount) || 200000);
+      setSanctionInterest(Number(found.interestRate) || 8.5);
+      setRepaymentMonths(Number(found.tenureMonths) || 24);
+      setCurrentMonthIndex(Number(found.currentMonth) || 1);
+      setRemainingPrincipalBalance(found.remainingBalance !== undefined ? Number(found.remainingBalance) : 200000);
+      setCumulativePrincipalPaid(Number(found.cumulativePrincipalPaid) || 0);
+      setCumulativeInterestPaid(Number(found.cumulativeInterestPaid) || 0);
+      goToStep(3);
+    }
+  };
+
+  // Load journey from URL or sync journeys list on mount
   useEffect(() => {
-    setRemainingPrincipalBalance(sanctionAmount);
-    setCumulativePrincipalPaid(0);
-    setCumulativeInterestPaid(0);
-    setCurrentMonthIndex(1);
-  }, [sanctionAmount]);
+    fetchJourneys().then((list) => {
+      const qJourneyId = searchParams.get('journeyId');
+      if (qJourneyId) {
+        loadSpecificJourney(qJourneyId, list);
+      } else if (list.length > 0 && currentStep === 3 && !activeJourneyId) {
+        // Automatically load existing active loan if accessing step 3 directly
+        loadSpecificJourney(list[0].id, list);
+      }
+    });
+  }, [searchParams]);
+
+  // Jump to specific month (e.g. Month 21 of 24)
+  const handleSetMonthIndex = (targetMonth) => {
+    const clamped = Math.max(1, Math.min(Number(repaymentMonths), Number(targetMonth)));
+    setCurrentMonthIndex(clamped);
+    const ledger = calculateAmortizationForMonth(sanctionAmount, sanctionInterest, repaymentMonths, clamped);
+    setRemainingPrincipalBalance(ledger.remainingBalance);
+    setCumulativePrincipalPaid(ledger.cumulativePrincipalPaid);
+    setCumulativeInterestPaid(ledger.cumulativeInterestPaid);
+
+    if (activeJourneyId) {
+      updateUserScheme(activeJourneyId, {
+        currentMonth: clamped,
+        remainingBalance: ledger.remainingBalance,
+        cumulativePrincipalPaid: ledger.cumulativePrincipalPaid,
+        cumulativeInterestPaid: ledger.cumulativeInterestPaid
+      }).then(() => fetchJourneys()).catch(() => {});
+    }
+  };
 
   // Standard Monthly EMI calculation
   const calculations = useMemo(() => {
@@ -177,8 +284,63 @@ export default function UserFlowPage({ initialStep = 1 }) {
     };
   }, [sanctionAmount, sanctionInterest, repaymentMonths]);
 
+  // Save current scheme journey to persistent backend storage
+  const handleSaveToHistory = async () => {
+    try {
+      const payload = {
+        id: activeJourneyId || `journey-${Date.now()}`,
+        userId: 'rajesh-kumar',
+        applicantName: answers.applicantName || 'Rajesh Kumar',
+        district: answers.district || 'Coimbatore',
+        businessType: answers.businessType || 'Food Processing & Bakery',
+        schemeId: selectedScheme.id,
+        schemeName: selectedScheme.name,
+        schemeTag: selectedScheme.tag || 'Government Scheme',
+        bankId: selectedBank.id,
+        bankName: selectedBank.name,
+        bankDistance: selectedBank.distance,
+        status: sanctionStatus === 'yes' ? 'active_repayment' : 'exploring',
+        loanAmount: sanctionAmount,
+        interestRate: sanctionInterest,
+        tenureMonths: repaymentMonths,
+        currentMonth: currentMonthIndex,
+        remainingBalance: remainingPrincipalBalance,
+        cumulativePrincipalPaid,
+        cumulativeInterestPaid,
+        emi: calculations.emi
+      };
+
+      if (activeJourneyId) {
+        await updateUserScheme(activeJourneyId, payload);
+      } else {
+        const res = await saveUserScheme(payload);
+        if (res.scheme && res.scheme.id) {
+          setActiveJourneyId(res.scheme.id);
+        }
+      }
+      setSaveToast('Scheme loan successfully saved to your persistent history!');
+      setTimeout(() => setSaveToast(''), 4000);
+      fetchJourneys();
+    } catch (e) {
+      alert('Failed to save scheme: ' + (e.message || 'Error'));
+    }
+  };
+
+  // User exploring another loan while keeping their first loan active (Audio requirement!)
+  const handleExploreAnotherLoan = async () => {
+    try {
+      await handleSaveToHistory();
+    } catch (e) {}
+
+    setActiveJourneyId(null);
+    setSelectedSchemeId('mudra');
+    setSaveToast('Your current loan is active and tracked in history! You can now explore your next loan/scheme.');
+    setTimeout(() => setSaveToast(''), 6000);
+    goToStep(1);
+  };
+
   // Record a monthly EMI payment (reducing balance calculation)
-  const handleRecordMonthlyPayment = () => {
+  const handleRecordMonthlyPayment = async () => {
     if (remainingPrincipalBalance <= 0) return;
 
     const rMonth = (Number(sanctionInterest) || 8.0) / 100 / 12;
@@ -191,11 +353,19 @@ export default function UserFlowPage({ initialStep = 1 }) {
       Math.max(0, calculations.emi - interestThisMonth)
     );
     const newBalance = Math.max(0, remainingPrincipalBalance - principalThisMonth);
+    const nextMonth = Math.min(Number(repaymentMonths), currentMonthIndex + 1);
 
     setRemainingPrincipalBalance(newBalance);
     setCumulativePrincipalPaid((prev) => prev + principalThisMonth);
     setCumulativeInterestPaid((prev) => prev + interestThisMonth);
-    setCurrentMonthIndex((prev) => Math.min(prev + 1, Number(repaymentMonths)));
+    setCurrentMonthIndex(nextMonth);
+
+    if (activeJourneyId) {
+      try {
+        await recordSchemePayment(activeJourneyId);
+        fetchJourneys();
+      } catch (e) {}
+    }
 
     voice.speak(
       `Month ${currentMonthIndex} payment of rupees ${calculations.emi} recorded. Reduced remaining loan balance is rupees ${newBalance}.`
@@ -334,6 +504,13 @@ export default function UserFlowPage({ initialStep = 1 }) {
         </Link>
 
         <div className="header-controls">
+          <NotificationCenter text={text} voice={voice} />
+
+          <Link to="/history" className="header-history-link" title="My Enrolled Schemes & Loan History">
+            <Clock size={18} />
+            <span className="history-link-text">{text.mySchemes || 'My Schemes'}</span>
+          </Link>
+
           <div className="language-selector-wrap">
             <select
               value={language}
@@ -366,6 +543,14 @@ export default function UserFlowPage({ initialStep = 1 }) {
           </button>
         </div>
       </header>
+
+      {/* Persistence Feedback Toast Banner */}
+      {saveToast && (
+        <div className="action-toast-banner animate-fade-in">
+          <Sparkles size={18} className="gold" />
+          <span>{saveToast}</span>
+        </div>
+      )}
 
       {/* Interactive Step Indicator Header (Steps 1, 2, and 3) */}
       <StepIndicator
@@ -912,6 +1097,45 @@ export default function UserFlowPage({ initialStep = 1 }) {
             </button>
           </div>
 
+          {/* Multi-Scheme Journeys Switcher Bar (YouTube-style History Quick Selector) */}
+          <div className="active-journeys-bar card">
+            <div className="journeys-bar-header">
+              <div className="journeys-label">
+                <Clock size={18} className="gold" />
+                <span>{text.mySchemes || 'My Enrolled Schemes'}:</span>
+              </div>
+              <Link to="/history" className="view-history-link">
+                <span>View Full History ({userJourneys.length})</span>
+                <ArrowRight size={14} />
+              </Link>
+            </div>
+            <div className="journeys-tabs-scroll">
+              {userJourneys.map((j) => {
+                const isActive = activeJourneyId === j.id;
+                return (
+                  <button
+                    key={j.id}
+                    className={`journey-tab ${isActive ? 'active' : ''}`}
+                    onClick={() => loadSpecificJourney(j.id)}
+                    title={`Switch to ${j.schemeName}`}
+                  >
+                    <span className="j-tab-name">{j.schemeName.split(' ')[0]}</span>
+                    <span className="j-tab-badge">Month {j.currentMonth}/{j.tenureMonths}</span>
+                    {j.status === 'active_repayment' && <Bell size={12} className="j-tab-bell text-amber" />}
+                  </button>
+                );
+              })}
+              <button
+                className="journey-new-btn"
+                onClick={handleExploreAnotherLoan}
+                title="Search and apply for another loan while keeping current loan active"
+              >
+                <Plus size={14} />
+                <span>+ Explore Another Loan</span>
+              </button>
+            </div>
+          </div>
+
           {/* Sanction Question Card */}
           <section className="card sanction-question-card">
             <div className="sanction-question-header">
@@ -1081,7 +1305,7 @@ export default function UserFlowPage({ initialStep = 1 }) {
                     <div className="loan-progress-labels">
                       <span>{text.loanRepaidProgress || 'Loan Repaid Progress'}</span>
                       <span>
-                        <strong>{loanRepaidPercentage}% Repaid</strong>
+                        <strong>{loanRepaidPercentage}% Repaid</strong> ({Math.max(0, repaymentMonths - currentMonthIndex)} months remaining)
                       </span>
                     </div>
                     <div className="loan-progress-track">
@@ -1135,7 +1359,25 @@ export default function UserFlowPage({ initialStep = 1 }) {
                       title="Test monthly reminder notification"
                     >
                       <Bell size={18} />
-                      <span>{text.simulateNotificationBtn || 'Simulate Next Month Reminder Notification'}</span>
+                      <span>{text.simulateNotificationBtn || 'Simulate Reminder Notification'}</span>
+                    </button>
+
+                    <button
+                      className="secondary-button save-history-btn"
+                      onClick={handleSaveToHistory}
+                      title="Save or sync loan progress to persistent backend history"
+                    >
+                      <Bookmark size={18} />
+                      <span>{text.saveToHistory || 'Save to My History'}</span>
+                    </button>
+
+                    <button
+                      className="secondary-button explore-next-btn"
+                      onClick={handleExploreAnotherLoan}
+                      title="Keep this loan active and explore/apply for a 2nd scheme"
+                    >
+                      <Plus size={18} />
+                      <span>{text.exploreAnotherLoan || '+ Explore Another Loan'}</span>
                     </button>
 
                     <button
